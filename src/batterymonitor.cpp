@@ -98,24 +98,23 @@ void BatteryMonitor::Loop()
             #endif
             if (voltage > 0) //valid measurement
             {
-                // Estimate battery level, 3.2V is 0%, 4.17V is 100% (1.0)
-                if (voltage > 3.975f)
-                    level = (voltage - 2.920f) * 0.8f;
-                else if (voltage > 3.678f)
-                    level = (voltage - 3.300f) * 1.25f;
-                else if (voltage > 3.489f)
-                    level = (voltage - 3.400f) * 1.7f;
-                else if (voltage > 3.360f)
-                    level = (voltage - 3.300f) * 0.8f;
+                if (voltage > 2.8f)
+                    level = 1.0f;
+                else if (voltage > 2.6f)
+                    level = 0.9f;
+                else if (voltage > 2.4f)
+                    level = 0.7f;
+                else if (voltage > 2.3f)
+                    level = 0.5f;
+                else if (voltage > 2.2f)
+                    level = 0.4f;
+                else if (voltage > 2.1f)
+                    level = 0.2f;
+                else if (voltage > 2.0f)
+                    level = 0.1f;
                 else
-                    level = (voltage - 3.200f) * 0.3f;
-
-                level = (level - 0.05f) / 0.95f; // Cut off the last 5% (3.36V)
-
-                if (level > 1)
-                    level = 1;
-                else if (level < 0)
-                    level = 0;
+                    level = 0.05f;
+                
                 Network::sendBatteryLevel(voltage, level);
                 #ifdef BATTERY_LOW_POWER_VOLTAGE
                     if (voltage < BATTERY_LOW_POWER_VOLTAGE)
@@ -125,6 +124,10 @@ void BatteryMonitor::Loop()
                         #else
                             statusManager.setStatus(SlimeVR::Status::LOW_BATTERY, true);
                         #endif
+                    }
+                    else if (voltage < BATTERY_LOW_ALART_VOLTAGE)
+                    {
+                        statusManager.setStatus(SlimeVR::Status::LOW_BATTERY, true);
                     } else {
                         statusManager.setStatus(SlimeVR::Status::LOW_BATTERY, false);
                     }
